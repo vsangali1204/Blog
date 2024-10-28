@@ -1,0 +1,105 @@
+<!-- templates/livros.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1 class="mb-4">Livros</h1>
+
+    <!-- Exibindo livros -->
+    <div class="row">
+        {% for livro in livros %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ livro.titulo }}</h5>
+                        <p class="card-text">Autor: {{ livro.autor }}</p>
+                        <a href="{{ livro.link }}" class="btn btn-info" target="_blank">Ver Livro</a>
+
+                        <!-- Exibir botões de edição e exclusão somente se logado -->
+                        {% if session.logado %}
+                            <div class="mt-2">
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarLivro{{ livro.id }}">Editar</button>
+                                <a href="{{ url_for('excluir_livro', id=livro.id) }}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este livro?')">Excluir</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Verificar se o usuário está logado -->
+    {% if session.logado %}
+        <!-- Botão para adicionar novo livro -->
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarLivro">Adicionar Livro</button>
+        </div>
+    {% endif %}
+
+    <!-- Modal para Adicionar Livro -->
+    <div class="modal fade" id="modalAdicionarLivro" tabindex="-1" aria-labelledby="modalAdicionarLivroLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('livros') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarLivroLabel">Adicionar Novo Livro</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="tituloLivro" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="tituloLivro" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="autorLivro" class="form-label">Autor</label>
+                            <input type="text" class="form-control" id="autorLivro" name="autor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="linkLivro" class="form-label">Link</label>
+                            <input type="text" class="form-control" id="linkLivro" name="link" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="adicionar">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais para Editar Livros (um para cada livro) -->
+    {% for livro in livros %}
+    <div class="modal fade" id="modalEditarLivro{{ livro.id }}" tabindex="-1" aria-labelledby="modalEditarLivroLabel{{ livro.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('livros') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarLivroLabel{{ livro.id }}">Editar Livro</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="tituloLivro{{ livro.id }}" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="tituloLivro{{ livro.id }}" name="titulo" value="{{ livro.titulo }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="autorLivro{{ livro.id }}" class="form-label">Autor</label>
+                            <input type="text" class="form-control" id="autorLivro{{ livro.id }}" name="autor" value="{{ livro.autor }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="linkLivro{{ livro.id }}" class="form-label">Link</label>
+                            <input type="text" class="form-control" id="linkLivro{{ livro.id }}" name="link" value="{{ livro.link }}" required>
+                        </div>
+                        <input type="hidden" name="livro_id" value="{{ livro.id }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" name="action" value="editar">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

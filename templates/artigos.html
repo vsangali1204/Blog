@@ -1,0 +1,111 @@
+<!-- templates/artigos.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1 class="mb-4">Artigos</h1>
+    
+    {% if session.logado %}
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionar">Adicionar Artigo</button>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        {% for artigo in artigos %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ artigo.titulo }}</h5>
+                        <p class="card-text">{{ artigo.conteudo[:100] }}...</p>
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVer{{ artigo.id }}">Ler mais</button>
+                        
+                        {% if session.logado %}
+                            <div class="mt-2">
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar{{ artigo.id }}">Editar</button>
+                                <a href="{{ url_for('excluir_artigo', id=artigo.id) }}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este artigo?')">Excluir</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para Ver Artigo -->
+            <div class="modal fade" id="modalVer{{ artigo.id }}" tabindex="-1" aria-labelledby="modalVerLabel{{ artigo.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerLabel{{ artigo.id }}">{{ artigo.titulo }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ artigo.conteudo }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal para Adicionar Artigo -->
+    <div class="modal fade" id="modalAdicionar" tabindex="-1" aria-labelledby="modalAdicionarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('artigos') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarLabel">Adicionar Novo Artigo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conteudo" class="form-label">Conteúdo</label>
+                            <textarea class="form-control" id="conteudo" name="conteudo" rows="5" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="adicionar">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais para Editar Artigos (um para cada artigo) -->
+    {% for artigo in artigos %}
+    <div class="modal fade" id="modalEditar{{ artigo.id }}" tabindex="-1" aria-labelledby="modalEditarLabel{{ artigo.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('artigos') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarLabel{{ artigo.id }}">Editar Artigo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="titulo{{ artigo.id }}" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo{{ artigo.id }}" name="titulo" value="{{ artigo.titulo }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conteudo{{ artigo.id }}" class="form-label">Conteúdo</label>
+                            <textarea class="form-control" id="conteudo{{ artigo.id }}" name="conteudo" rows="5" required>{{ artigo.conteudo }}</textarea>
+                        </div>
+                        <input type="hidden" name="artigo_id" value="{{ artigo.id }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" name="action" value="editar">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

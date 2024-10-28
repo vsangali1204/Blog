@@ -1,0 +1,169 @@
+<!-- templates/eventos.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1 class="mb-4">Eventos</h1>
+
+    <!-- Verificar se o usuário está logado -->
+    {% if session.logado %}
+        <!-- Botão para adicionar novo evento -->
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarEvento">Adicionar Evento</button>
+        </div>
+    {% endif %}
+
+    <!-- Exibindo eventos -->
+    <div class="row">
+        {% for evento in eventos %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ evento.titulo }}</h5>
+                        <p class="card-text"><strong>Tipo:</strong> {{ evento.tipo_evento }}</p>
+                        <p class="card-text"><strong>Data:</strong> {{ evento.data_evento.strftime('%d/%m/%Y %H:%M') }}</p>
+                        <p class="card-text"><strong>Local:</strong> {{ evento.local }}</p>
+                        <p class="card-text">{{ evento.resumo[:100] }}...</p>
+
+                        <!-- Botão para ver detalhes completos -->
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVerEvento{{ evento.id }}">Ver Detalhes</button>
+
+                        <!-- Exibir botões de edição e exclusão somente se logado -->
+                        {% if session.logado %}
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarEvento{{ evento.id }}">Editar</button>
+                            <a href="{{ url_for('excluir_evento', id=evento.id) }}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este evento?')">Excluir</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para Ver Evento -->
+            <div class="modal fade" id="modalVerEvento{{ evento.id }}" tabindex="-1" aria-labelledby="modalVerEventoLabel{{ evento.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerEventoLabel{{ evento.id }}">{{ evento.titulo }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Tipo de Evento:</strong> {{ evento.tipo_evento }}</p>
+                            <p><strong>Data e Horário:</strong> {{ evento.data_evento.strftime('%d/%m/%Y %H:%M') }}</p>
+                            <p><strong>Local:</strong> {{ evento.local }}</p>
+                            <p><strong>Público-Alvo:</strong> {{ evento.publico_alvo }}</p>
+                            <p><strong>Resumo:</strong></p>
+                            <p>{{ evento.resumo }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal para Adicionar Evento -->
+    <div class="modal fade" id="modalAdicionarEvento" tabindex="-1" aria-labelledby="modalAdicionarEventoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('eventos') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarEventoLabel">Adicionar Novo Evento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="tituloEvento" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="tituloEvento" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipoEvento" class="form-label">Tipo de Evento</label>
+                            <select class="form-select" id="tipoEvento" name="tipo_evento" required>
+                                <option value="">Selecione o tipo de evento</option>
+                                <option value="Conferência">Conferência</option>
+                                <option value="Workshop">Workshop</option>
+                                <option value="Simpósio">Simpósio</option>
+                                <option value="Webinar">Webinar</option>
+                                <option value="Palestra">Palestra</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataEvento" class="form-label">Data e Horário</label>
+                            <input type="datetime-local" class="form-control" id="dataEvento" name="data_evento" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="localEvento" class="form-label">Local</label>
+                            <input type="text" class="form-control" id="localEvento" name="local" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="publicoAlvoEvento" class="form-label">Público-Alvo</label>
+                            <input type="text" class="form-control" id="publicoAlvoEvento" name="publico_alvo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="resumoEvento" class="form-label">Resumo do Evento</label>
+                            <textarea class="form-control" id="resumoEvento" name="resumo" rows="5" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="adicionar">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais para Editar Eventos (um para cada evento) -->
+    {% for evento in eventos %}
+    <div class="modal fade" id="modalEditarEvento{{ evento.id }}" tabindex="-1" aria-labelledby="modalEditarEventoLabel{{ evento.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('eventos') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarEventoLabel{{ evento.id }}">Editar Evento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="tituloEvento{{ evento.id }}" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="tituloEvento{{ evento.id }}" name="titulo" value="{{ evento.titulo }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipoEvento{{ evento.id }}" class="form-label">Tipo de Evento</label>
+                            <select class="form-select" id="tipoEvento{{ evento.id }}" name="tipo_evento" required>
+                                <option value="Conferência" {% if evento.tipo_evento == 'Conferência' %}selected{% endif %}>Conferência</option>
+                                <option value="Workshop" {% if evento.tipo_evento == 'Workshop' %}selected{% endif %}>Workshop</option>
+                                <option value="Simpósio" {% if evento.tipo_evento == 'Simpósio' %}selected{% endif %}>Simpósio</option>
+                                <option value="Webinar" {% if evento.tipo_evento == 'Webinar' %}selected{% endif %}>Webinar</option>
+                                <option value="Palestra" {% if evento.tipo_evento == 'Palestra' %}selected{% endif %}>Palestra</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataEvento{{ evento.id }}" class="form-label">Data e Horário</label>
+                            <input type="datetime-local" class="form-control" id="dataEvento{{ evento.id }}" name="data_evento" 
+                                   value="{{ evento.data_evento.strftime('%Y-%m-%dT%H:%M') }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="localEvento{{ evento.id }}" class="form-label">Local</label>
+                            <input type="text" class="form-control" id="localEvento{{ evento.id }}" name="local" value="{{ evento.local }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="publicoAlvoEvento{{ evento.id }}" class="form-label">Público-Alvo</label>
+                            <input type="text" class="form-control" id="publicoAlvoEvento{{ evento.id }}" name="publico_alvo" value="{{ evento.publico_alvo }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="resumoEvento{{ evento.id }}" class="form-label">Resumo do Evento</label>
+                            <textarea class="form-control" id="resumoEvento{{ evento.id }}" name="resumo" rows="5" required>{{ evento.resumo }}</textarea>
+                        </div>
+                        <input type="hidden" name="evento_id" value="{{ evento.id }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" name="action" value="editar">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

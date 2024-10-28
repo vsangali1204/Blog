@@ -1,0 +1,126 @@
+<!-- templates/atividades.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1 class="mb-4">Atividades</h1>
+
+    <!-- Verificar se o usuário está logado -->
+    {% if session.logado %}
+        <!-- Botão para adicionar nova atividade -->
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarAtividade">Adicionar Atividade</button>
+        </div>
+    {% endif %}
+
+    <!-- Exibindo atividades -->
+    <div class="row">
+        {% for atividade in atividades %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ atividade.titulo }}</h5>
+                        <p class="card-text">{{ atividade.descricao[:100] }}...</p>
+                        <p class="card-text"><strong>Data de Entrega:</strong> {{ atividade.data_entrega }}</p>
+
+                        <!-- Botão para ver a descrição completa -->
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVerAtividade{{ atividade.id }}">Ver Atividade</button>
+
+                        <!-- Exibir botões de edição e exclusão somente se logado -->
+                        {% if session.logado %}
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarAtividade{{ atividade.id }}">Editar</button>
+                            <a href="{{ url_for('excluir_atividade', id=atividade.id) }}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta atividade?')">Excluir</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para Ver Atividade -->
+            <div class="modal fade" id="modalVerAtividade{{ atividade.id }}" tabindex="-1" aria-labelledby="modalVerAtividadeLabel{{ atividade.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerAtividadeLabel{{ atividade.id }}">{{ atividade.titulo }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Descrição:</strong></p>
+                            <p>{{ atividade.descricao }}</p>
+                            <p><strong>Data de Entrega:</strong> {{ atividade.data_entrega }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal para Adicionar Atividade -->
+    <div class="modal fade" id="modalAdicionarAtividade" tabindex="-1" aria-labelledby="modalAdicionarAtividadeLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('atividades') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarAtividadeLabel">Adicionar Nova Atividade</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="tituloAtividade" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="tituloAtividade" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricaoAtividade" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricaoAtividade" name="descricao" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataEntregaAtividade" class="form-label">Data de Entrega</label>
+                            <input type="date" class="form-control" id="dataEntregaAtividade" name="data_entrega" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="adicionar">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais para Editar Atividades (um para cada atividade) -->
+    {% for atividade in atividades %}
+    <div class="modal fade" id="modalEditarAtividade{{ atividade.id }}" tabindex="-1" aria-labelledby="modalEditarAtividadeLabel{{ atividade.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('atividades') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarAtividadeLabel{{ atividade.id }}">Editar Atividade</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="tituloAtividade{{ atividade.id }}" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="tituloAtividade{{ atividade.id }}" name="titulo" value="{{ atividade.titulo }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricaoAtividade{{ atividade.id }}" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricaoAtividade{{ atividade.id }}" name="descricao" rows="5" required>{{ atividade.descricao }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataEntregaAtividade{{ atividade.id }}" class="form-label">Data de Entrega</label>
+                            <input type="date" class="form-control" id="dataEntregaAtividade{{ atividade.id }}" name="data_entrega" value="{{ atividade.data_entrega }}" required>
+                        </div>
+                        <input type="hidden" name="atividade_id" value="{{ atividade.id }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" name="action" value="editar">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,48 @@
+<!-- templates/inicio.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<h1>Bem-vindo ao Blog Educacional</h1>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <h2>Últimos Artigos</h2>
+        {% for artigo in artigos %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ artigo.titulo }}</h5>
+                    <p class="card-text">{{ artigo.conteudo[:200] }}...</p>
+                    <a href="/artigo/{{ artigo.id }}" class="btn btn-primary">Ler mais</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="col-md-4">
+        <h2>Últimos Livros</h2>
+        {% for livro in livros %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ livro.titulo }}</h5>
+                    <p class="card-text">{{ livro.autor }}</p>
+                    <a href="{{ livro.link }}" class="btn btn-primary" target="_blank">Acessar</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="col-md-4">
+        <h2>Atividades Recentes</h2>
+        {% for atividade in atividades %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ atividade.titulo }}</h5>
+                    <p class="card-text">Data limite: {{ atividade.data_entrega }}</p>
+                    <a href="/atividade/{{ atividade.id }}" class="btn btn-primary">Ver detalhes</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,26 @@
+<!-- templates/cadastro.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<div class="container mt-5">
+    <h2 class="mb-4">Cadastro de Usuário</h2>
+    <form action="{{ url_for('cadastrar_usuario') }}" method="POST">
+        <div class="mb-3">
+            <label for="usuario" class="form-label">Nome de Usuário</label>
+            <input type="text" class="form-control" id="usuario" name="usuario" required>
+        </div>
+        <div class="mb-3">
+            <label for="senha" class="form-label">Senha</label>
+            <input type="password" class="form-control" id="senha" name="senha" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">E-mail</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+    <div class="mt-3">
+        <a href="{{ url_for('login') }}">Já tem uma conta? Faça login aqui.</a>
+    </div>
+</div>
+{% endblock %}
