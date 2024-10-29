@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('biblioteca') }}">Biblioteca</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ material.titulo }}</li>
+            </ol>
+        </nav>
+
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">{{ material.titulo }}</h1>
+                <div class="badge bg-primary mb-3">
+                    {% if material.tipo_material == 'plano_aula' %}
+                        Plano de Aula
+                    {% else %}
+                        Material Complementar
+                    {% endif %}
+                </div>
+
+                {% if material.objetivo_educacional %}
+                <div class="mb-4">
+                    <h3>Objetivo Educacional</h3>
+                    <p>{{ material.objetivo_educacional }}</p>
+                </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    <h3>Descrição</h3>
+                    <p>{{ material.descricao }}</p>
+                </div>
+
+                {% if material.sugestoes_integracao %}
+                <div class="mb-4">
+                    <h3>Sugestões de Integração</h3>
+                    <p>{{ material.sugestoes_integracao }}</p>
+                </div>
+                {% endif %}
+
+                {% if material.link_material %}
+                <div class="mb-4">
+                    <h3>Material</h3>
+                    <a href="{{ material.link_material }}" class="btn btn-primary" target="_blank">
+                        Acessar Material Completo
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="text-muted mt-4">
+                    <small>
+                        Criado por: {{ material.nome_usuario }}
+                        <br>
+                        Data: {{ material.data_criacao.strftime('%d/%m/%Y %H:%M') }}
+                    </small>
+                </div>
+
+                {% if session.logado and session.id_usuario == material.id_usuario %}
+                <div class="mt-4">
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarMaterial{{ material.id }}">
+                        Editar
+                    </button>
+                    <a href="{{ url_for('excluir_material', id=material.id) }}" 
+                       class="btn btn-danger"
+                       onclick="return confirm('Tem certeza que deseja excluir este material?')">
+                        Excluir
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

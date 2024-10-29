@@ -1,5 +1,4 @@
-/* static/css/sidebar.css */
-
+/* Sidebar */
 #sidebar {
     height: 100vh;
     position: fixed;
@@ -10,6 +9,7 @@
     padding-top: 1rem;
     transition: width 0.3s;
     width: 250px;
+    z-index: 1;
 }
 #sidebar.collapsed {
     width: 80px;
@@ -33,10 +33,31 @@
 #sidebar.collapsed .navbar-brand {
     display: none;
 }
+
+/* Content */
 #content {
     margin-left: 250px;
     transition: margin-left 0.3s;
 }
 #content.collapsed {
     margin-left: 80px;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    #sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding-top: 0;
+    }
+    #sidebar.collapsed {
+        width: 100%;
+    }
+    #content {
+        margin-left: 0;
+    }
+    #content.collapsed {
+        margin-left: 0;
+    }
 }

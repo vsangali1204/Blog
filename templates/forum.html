@@ -1,0 +1,88 @@
+<!-- templates/forum.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1 class="mb-4">Fórum</h1>
+    
+    {% if session.logado %}
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarTopico">Adicionar Tópico</button>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        {% for topico in topicos %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ topico.titulo }}</h5>
+                        <p class="card-text">{{ topico.conteudo[:100] }}...</p>
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVer{{ topico.id }}">Ler mais</button>
+                        
+                        {% if session.logado %}
+                            <div class="mt-2">
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar{{ topico.id }}">Editar</button>
+                                <a href="{{ url_for('excluir_topico', id=topico.id) }}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este tópico?')">Excluir</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para Ver Tópico -->
+            <div class="modal fade" id="modalVer{{ topico.id }}" tabindex="-1" aria-labelledby="modalVerLabel{{ topico.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerLabel{{ topico.id }}">{{ topico.titulo }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ topico.conteudo }}</p>
+                            <h5>Respostas:</h5>
+                            <form action="{{ url_for('forum') }}" method="POST">
+                                <div class="mb-3">
+                                    <textarea class="form-control" name="conteudo" rows="3" required placeholder="Digite sua resposta..."></textarea>
+                                    <input type="hidden" name="topico_id" value="{{ topico.id }}">
+                                </div>
+                                <button type="submit" class="btn btn-primary" name="action" value="adicionar_resposta">Responder</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal para Adicionar Tópico -->
+    <div class="modal fade" id="modalAdicionarTopico" tabindex="-1" aria-labelledby="modalAdicionarTopicoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('forum') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarTopicoLabel">Adicionar Novo Tópico</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conteudo" class="form-label">Conteúdo</label>
+                            <textarea class="form-control" id="conteudo" name="conteudo" rows="5" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="adicionar_topico">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,121 @@
+<!-- templates/biblioteca.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1 class="mb-4">Biblioteca de Materiais</h1>
+    
+    {% if session.logado %}
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarMaterial">Adicionar Material</button>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        {% for material in materiais %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ material.objetivo_educacional[:30] }}...</h5>
+                        <p class="card-text">Objetivo: {{ material.objetivo_educacional }}</p>
+                        <p class="card-text">Materiais Complementares: {{ material.materiais_complementares }}</p>
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVerMaterial{{ material.id }}">Ver mais</button>
+                        
+                        {% if session.logado %}
+                            <div class="mt-2">
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarMaterial{{ material.id }}">Editar</button>
+                                <a href="{{ url_for('excluir_material', id=material.id) }}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este material?')">Excluir</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para Ver Material -->
+            <div class="modal fade" id="modalVerMaterial{{ material.id }}" tabindex="-1" aria-labelledby="modalVerLabel{{ material.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerLabel{{ material.id }}">{{ material.objetivo_educacional }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Objetivo: </strong>{{ material.materiais_complementares }}</p>
+                            <p><strong>Materiais: </strong>{{ material.sugestoes_integracao }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal para Adicionar Material -->
+    <div class="modal fade" id="modalAdicionarMaterial" tabindex="-1" aria-labelledby="modalAdicionarMaterialLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('biblioteca') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarMaterialLabel">Adicionar Novo Material</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="objetivo_educacional" class="form-label">Objetivo Educacional</label>
+                            <input type="text" class="form-control" id="objetivo_educacional" name="objetivo_educacional" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="materiais_complementares" class="form-label">Materiais Complementares</label>
+                            <textarea class="form-control" id="materiais_complementares" name="materiais_complementares" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sugestoes_integracao" class="form-label">Sugestões de Integração</label>
+                            <textarea class="form-control" id="sugestoes_integracao" name="sugestoes_integracao" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="adicionar">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais para Editar Materiais (um para cada material) -->
+    {% for material in materiais %}
+    <div class="modal fade" id="modalEditarMaterial{{ material.id }}" tabindex="-1" aria-labelledby="modalEditarMaterialLabel{{ material.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('biblioteca') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarMaterialLabel{{ material.id }}">Editar Material</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="objetivo_educacional{{ material.id }}" class="form-label">Objetivo Educacional</label>
+                            <input type="text" class="form-control" id="objetivo_educacional{{ material.id }}" name="objetivo_educacional" value="{{ material.objetivo_educacional }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="materiais_complementares{{ material.id }}" class="form-label">Materiais Complementares</label>
+                            <textarea class="form-control" id="materiais_complementares{{ material.id }}" name="materiais_complementares" rows="3" required>{{ material.materiais_complementares }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sugestoes_integracao{{ material.id }}" class="form-label">Sugestões de Integração</label>
+                            <textarea class="form-control" id="sugestoes_integracao{{ material.id }}" name="sugestoes_integracao" rows="3" required>{{ material.sugestoes_integracao }}</textarea>
+                        </div>
+                        <input type="hidden" name="material_id" value="{{ material.id }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" name="action" value="editar">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

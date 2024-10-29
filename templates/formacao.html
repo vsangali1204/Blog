@@ -1,0 +1,129 @@
+<!-- templates/formacao.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1 class="mb-4">Formação e Desenvolvimento Profissional</h1>
+    
+    {% if session.logado %}
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionar">Adicionar Curso/Tutorial</button>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        {% for formacao in formacoes %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Carga Horária: {{ formacao.carga_horaria }}</h5>
+                        <p class="card-text">Certificação: {{ 'Sim' if formacao.certificacao else 'Não' }}</p>
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVer{{ formacao.id }}">Ler mais</button>
+                        
+                        {% if session.logado %}
+                            <div class="mt-2">
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar{{ formacao.id }}">Editar</button>
+                                <a href="{{ url_for('excluir_formacao', id=formacao.id) }}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este curso/tutorial?')">Excluir</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para Ver Curso/Tutorial -->
+            <div class="modal fade" id="modalVer{{ formacao.id }}" tabindex="-1" aria-labelledby="modalVerLabel{{ formacao.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerLabel{{ formacao.id }}">{{ formacao.carga_horaria }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Carga Horária:</strong> {{ formacao.carga_horaria }}</p>
+                            <p><strong>Certificação:</strong> {{ 'Sim' if formacao.certificacao else 'Não' }}</p>
+                            <p><strong>Conteúdos Complementares:</strong> {{ formacao.conteudos_complementares }}</p>
+                            <p><strong>Comunidade de Professores:</strong> {{ formacao.comunidade }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal para Adicionar Curso/Tutorial -->
+    <div class="modal fade" id="modalAdicionar" tabindex="-1" aria-labelledby="modalAdicionarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('formacao') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarLabel">Adicionar Novo Curso/Tutorial</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="carga_horaria" class="form-label">Carga Horária</label>
+                            <input type="text" class="form-control" id="carga_horaria" name="carga_horaria" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="certificacao" name="certificacao">
+                            <label class="form-check-label" for="certificacao">Certificação</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conteudos_complementares" class="form-label">Conteúdos Complementares</label>
+                            <textarea class="form-control" id="conteudos_complementares" name="conteudos_complementares" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comunidade" class="form-label">Comunidade de Professores</label>
+                            <textarea class="form-control" id="comunidade" name="comunidade" rows="3" placeholder="Espaço para troca de experiências e estratégias pedagógicas."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="adicionar">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais para Editar Cursos/Tutoriais (um para cada curso/tutorial) -->
+    {% for formacao in formacoes %}
+    <div class="modal fade" id="modalEditar{{ formacao.id }}" tabindex="-1" aria-labelledby="modalEditarLabel{{ formacao.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('formacao') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarLabel{{ formacao.id }}">Editar Curso/Tutorial</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="formacao_id" value="{{ formacao.id }}">
+                        <div class="mb-3">
+                            <label for="carga_horaria" class="form-label">Carga Horária</label>
+                            <input type="text" class="form-control" id="carga_horaria" name="carga_horaria" value="{{ formacao.carga_horaria }}" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="certificacao" name="certificacao" {{ 'checked' if formacao.certificacao else '' }}>
+                            <label class="form-check-label" for="certificacao">Certificação</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conteudos_complementares" class="form-label">Conteúdos Complementares</label>
+                            <textarea class="form-control" id="conteudos_complementares" name="conteudos_complementares" rows="5" required>{{ formacao.conteudos_complementares }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comunidade" class="form-label">Comunidade de Professores</label>
+                            <textarea class="form-control" id="comunidade" name="comunidade" rows="3" required>{{ formacao.comunidade }}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" name="action" value="editar">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}

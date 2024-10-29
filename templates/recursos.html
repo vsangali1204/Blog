@@ -1,0 +1,131 @@
+<!-- templates/recursos.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1 class="mb-4">Recursos Interativos</h1>
+    
+    {% if session.logado %}
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarRecurso">Adicionar Recurso</button>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        {% for recurso in recursos %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ recurso.descricao[:30] }}...</h5>
+                        <p class="card-text">Tipo: {{ recurso.tipo_atividade }}</p>
+                        <p class="card-text">Integração com Currículo: {{ recurso.integracao_curriculo }}</p>
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVerRecurso{{ recurso.id }}">Ver mais</button>
+                        
+                        {% if session.logado %}
+                            <div class="mt-2">
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarRecurso{{ recurso.id }}">Editar</button>
+                                <a href="{{ url_for('excluir_recurso', id=recurso.id) }}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este recurso?')">Excluir</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para Ver Recurso -->
+            <div class="modal fade" id="modalVerRecurso{{ recurso.id }}" tabindex="-1" aria-labelledby="modalVerRecursoLabel{{ recurso.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerRecursoLabel{{ recurso.id }}">{{ recurso.descricao }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Tipo de Atividade:</strong> {{ recurso.tipo_atividade }}</p>
+                            <p><strong>Integração com Currículo:</strong> {{ recurso.integracao_curriculo }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal para Adicionar Recurso -->
+    <div class="modal fade" id="modalAdicionarRecurso" tabindex="-1" aria-labelledby="modalAdicionarRecursoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('recursos') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarRecursoLabel">Adicionar Novo Recurso Interativo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipo_atividade" class="form-label">Tipo de Atividade</label>
+                            <select class="form-select" id="tipo_atividade" name="tipo_atividade" required>
+                                <option value="Quiz">Quiz</option>
+                                <option value="Jogo">Jogo</option>
+                                <option value="Mapa Conceitual">Mapa Conceitual</option>
+                                <option value="Exercicio">Exercício</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="integracao_curriculo" class="form-label">Integração com Currículo (BNCC)</label>
+                            <input type="text" class="form-control" id="integracao_curriculo" name="integracao_curriculo" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="adicionar">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais para Editar Recursos (um para cada recurso) -->
+    {% for recurso in recursos %}
+    <div class="modal fade" id="modalEditarRecurso{{ recurso.id }}" tabindex="-1" aria-labelledby="modalEditarRecursoLabel{{ recurso.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('recursos') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarRecursoLabel{{ recurso.id }}">Editar Recurso</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="descricao{{ recurso.id }}" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao{{ recurso.id }}" name="descricao" rows="3" required>{{ recurso.descricao }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipo_atividade{{ recurso.id }}" class="form-label">Tipo de Atividade</label>
+                            <select class="form-select" id="tipo_atividade{{ recurso.id }}" name="tipo_atividade" required>
+                                <option value="Quiz" {% if recurso.tipo_atividade == 'Quiz' %}selected{% endif %}>Quiz</option>
+                                <option value="Jogo" {% if recurso.tipo_atividade == 'Jogo' %}selected{% endif %}>Jogo</option>
+                                <option value="Mapa Conceitual" {% if recurso.tipo_atividade == 'Mapa Conceitual' %}selected{% endif %}>Mapa Conceitual</option>
+                                <option value="Exercicio" {% if recurso.tipo_atividade == 'Exercicio' %}selected{% endif %}>Exercício</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="integracao_curriculo{{ recurso.id }}" class="form-label">Integração com Currículo</label>
+                            <input type="text" class="form-control" id="integracao_curriculo{{ recurso.id }}" name="integracao_curriculo" value="{{ recurso.integracao_curriculo }}" required>
+                        </div>
+                        <input type="hidden" name="recurso_id" value="{{ recurso.id }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" name="action" value="editar">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

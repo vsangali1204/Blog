@@ -449,6 +449,260 @@ def excluir_publicacao(id):
         connection.close()
     return redirect(url_for('publicacoes'))
 
+# ----------------------- Rotas para Biblioteca de Materiais -------------------------
+@app.route('/biblioteca', methods=['GET', 'POST'])
+def biblioteca():
+    connection = get_db_connection()
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'adicionar':
+            objetivo_educacional = request.form['objetivo_educacional']
+            materiais_complementares = request.form['materiais_complementares']
+            sugestoes_integracao = request.form['sugestoes_integracao']
+            id_usuario = session['id_usuario']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute(
+                        "INSERT INTO materiais (objetivo_educacional, materiais_complementares, sugestoes_integracao, id_usuario) "
+                        "VALUES (%s, %s, %s, %s)",
+                        (objetivo_educacional, materiais_complementares, sugestoes_integracao, id_usuario)
+                    )
+                    connection.commit()
+                flash('Material adicionado com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao adicionar material: {}'.format(e), 'danger')
+
+        elif action == 'editar':
+            objetivo_educacional = request.form['objetivo_educacional']
+            materiais_complementares = request.form['materiais_complementares']
+            sugestoes_integracao = request.form['sugestoes_integracao']
+            material_id = request.form['material_id']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute(
+                        "UPDATE materiais SET objetivo_educacional = %s, materiais_complementares = %s, sugestoes_integracao = %s "
+                        "WHERE id = %s AND id_usuario = %s",
+                        (objetivo_educacional, materiais_complementares, sugestoes_integracao, material_id, session['id_usuario'])
+                    )
+                    connection.commit()
+                flash('Material editado com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao editar material: {}'.format(e), 'danger')
+
+        return redirect(url_for('biblioteca'))
+
+    try:
+        with connection.cursor() as cur:
+            cur.execute("SELECT * FROM materiais ORDER BY data_criacao DESC")
+            materiais = cur.fetchall()
+    finally:
+        connection.close()
+    return render_template('biblioteca.html', materiais=materiais)
+
+# Rota para excluir material
+@app.route('/excluir/material/<int:id>')
+def excluir_material(id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cur:
+            cur.execute("DELETE FROM materiais WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            connection.commit()
+        flash('Material excluído com sucesso!', 'success')
+    except Exception as e:
+        flash('Erro ao excluir material: {}'.format(e), 'danger')
+    finally:
+        connection.close()
+    return redirect(url_for('biblioteca'))
+
+
+# ----------------------- Rotas para Recursos Interativos -------------------------
+@app.route('/recursos', methods=['GET', 'POST'])
+@login_obrigatorio
+def recursos():
+    connection = get_db_connection()
+    if request.method == 'POST':
+        if request.form.get('action') == 'adicionar':
+            descricao = request.form['descricao']
+            tipo_atividade = request.form['tipo_atividade']
+            integracao_curriculo = request.form['integracao_curriculo']
+            id_usuario = session['id_usuario']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute("""
+                        INSERT INTO recursos_interativos(descricao, tipo_atividade, integracao_curriculo, id_usuario)
+                        VALUES(%s, %s, %s, %s)
+                    """, (descricao, tipo_atividade, integracao_curriculo, id_usuario))
+                    connection.commit()
+                flash('Recurso interativo adicionado com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao adicionar recurso: {}'.format(e), 'danger')
+
+        elif request.form.get('action') == 'editar':
+            descricao = request.form['descricao']
+            tipo_atividade = request.form['tipo_atividade']
+            integracao_curriculo = request.form['integracao_curriculo']
+            recurso_id = request.form['recurso_id']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute("""
+                        UPDATE recursos_interativos SET descricao = %s, tipo_atividade = %s, integracao_curriculo = %s 
+                        WHERE id = %s AND id_usuario = %s
+                    """, (descricao, tipo_atividade, integracao_curriculo, recurso_id, id_usuario))
+                    connection.commit()
+                flash('Recurso interativo editado com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao editar recurso: {}'.format(e), 'danger')
+
+        return redirect(url_for('recursos'))
+
+    try:
+        with connection.cursor() as cur:
+            cur.execute("SELECT * FROM recursos_interativos ORDER BY data_criacao DESC")
+            recursos = cur.fetchall()
+    finally:
+        connection.close()
+    return render_template('recursos.html', recursos=recursos)
+
+@app.route('/excluir/recurso/<int:id>')
+@login_obrigatorio
+def excluir_recurso(id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cur:
+            cur.execute("DELETE FROM recursos_interativos WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            connection.commit()
+        flash('Recurso interativo excluído com sucesso!', 'success')
+    except Exception as e:
+        flash('Erro ao excluir recurso: {}'.format(e), 'danger')
+    finally:
+        connection.close()
+    return redirect(url_for('recursos'))
+
+# Rota para listar e manipular a formação e desenvolvimento profissional
+@app.route('/formacao', methods=['GET', 'POST'])
+def formacao():
+    connection = get_db_connection()
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'adicionar':
+            carga_horaria = request.form['carga_horaria']
+            certificacao = 'certificacao' in request.form  # Verifica se o checkbox foi marcado
+            conteudos_complementares = request.form['conteudos_complementares']
+            id_usuario = session['id_usuario']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute(
+                        "INSERT INTO formacao (carga_horaria, certificacao, conteudos_complementares, id_usuario) "
+                        "VALUES (%s, %s, %s, %s)",
+                        (carga_horaria, certificacao, conteudos_complementares, id_usuario)
+                    )
+                    connection.commit()
+                flash('Curso/Tutorial adicionado com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao adicionar curso/tutorial: {}'.format(e), 'danger')
+
+        elif action == 'editar':
+            carga_horaria = request.form['carga_horaria']
+            certificacao = 'certificacao' in request.form
+            conteudos_complementares = request.form['conteudos_complementares']
+            formacao_id = request.form['formacao_id']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute(
+                        "UPDATE formacao SET carga_horaria = %s, certificacao = %s, conteudos_complementares = %s "
+                        "WHERE id = %s AND id_usuario = %s",
+                        (carga_horaria, certificacao, conteudos_complementares, formacao_id, session['id_usuario'])
+                    )
+                    connection.commit()
+                flash('Curso/Tutorial editado com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao editar curso/tutorial: {}'.format(e), 'danger')
+
+        return redirect(url_for('formacao'))
+
+    try:
+        with connection.cursor() as cur:
+            cur.execute("SELECT * FROM formacao ORDER BY data_criacao DESC")
+            formacoes = cur.fetchall()
+    finally:
+        connection.close()
+    return render_template('formacao.html', formacoes=formacoes)
+
+# Rota para excluir um curso/tutorial
+@app.route('/excluir/formacao/<int:id>')
+def excluir_formacao(id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cur:
+            cur.execute("DELETE FROM formacao WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            connection.commit()
+        flash('Curso/Tutorial excluído com sucesso!', 'success')
+    except Exception as e:
+        flash('Erro ao excluir curso/tutorial: {}'.format(e), 'danger')
+    finally:
+        connection.close()
+    return redirect(url_for('formacao'))
+
+@app.route('/forum', methods=['GET', 'POST'])
+@login_obrigatorio
+def forum():
+    connection = get_db_connection()
+    if request.method == 'POST':
+        if request.form.get('action') == 'adicionar_topico':
+            titulo = request.form['titulo']
+            conteudo = request.form['conteudo']
+            id_usuario = session['id_usuario']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute("INSERT INTO topicos(titulo, conteudo, id_usuario) VALUES(%s, %s, %s)",
+                                (titulo, conteudo, id_usuario))
+                    connection.commit()
+                flash('Tópico adicionado com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao adicionar tópico: {}'.format(e), 'danger')
+
+        elif request.form.get('action') == 'adicionar_resposta':
+            conteudo = request.form['conteudo']
+            id_topico = request.form['topico_id']
+            id_usuario = session['id_usuario']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute("INSERT INTO respostas(conteudo, id_topico, id_usuario) VALUES(%s, %s, %s)",
+                                (conteudo, id_topico, id_usuario))
+                    connection.commit()
+                flash('Resposta adicionada com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao adicionar resposta: {}'.format(e), 'danger')
+
+        return redirect(url_for('forum'))
+
+    try:
+        with connection.cursor() as cur:
+            cur.execute("SELECT * FROM topicos ORDER BY data_criacao DESC")
+            topicos = cur.fetchall()
+    finally:
+        connection.close()
+    return render_template('forum.html', topicos=topicos)
+
+@app.route('/excluir/topico/<int:id>')
+@login_obrigatorio
+def excluir_topico(id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cur:
+            cur.execute("DELETE FROM topicos WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            connection.commit()
+        flash('Tópico excluído com sucesso!', 'success')
+    except Exception as e:
+        flash('Erro ao excluir tópico: {}'.format(e), 'danger')
+    finally:
+        connection.close()
+    return redirect(url_for('forum'))
+    
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
