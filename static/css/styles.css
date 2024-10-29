@@ -1,4 +1,32 @@
-/* Sidebar */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+.container {
+    max-width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+h1, h2 {
+    color: #0056b3;
+}
+h1 {
+    text-align: center;
+    font-size: 2em;
+}
+ul {
+    list-style: disc;
+    padding-left: 20px;
+}
+p, ul li {
+    font-size: 1em;
+    margin-bottom: 15px;
+}
+
 .navbar-custom {
     background-color: #104677 !important; /* Define a cor personalizada */
 }
@@ -19,28 +47,42 @@
     width: 250px;
     z-index: 1;
 }
+#sidebar {
+    width: 250px;
+    height: 100vh; /* Define a altura completa da barra lateral */
+    overflow-y: scroll; /* Adiciona uma barra de rolagem vertical */
+    scrollbar-width: thin; /* Ajusta a largura da barra de rolagem */
+}
+
 #sidebar.collapsed {
     width: 80px;
+    overflow-y: auto; /* Mantém a rolagem mesmo na versão colapsada */
 }
+
 #sidebar .nav-link {
     color: white;
     padding-left: 1.5rem;
     display: flex;
     align-items: center;
 }
+
 #sidebar .nav-link i {
     margin-right: 10px;
     transition: margin-right 0.3s;
 }
+
 #sidebar.collapsed .nav-link span {
     display: none;
 }
+
 #sidebar.collapsed .nav-link i {
     margin-right: 0;
 }
+
 #sidebar.collapsed .navbar-brand {
     display: none;
 }
+
 
 /* Content */
 #content {
