@@ -86,3 +86,23 @@
 .fixed-image:hover {
     opacity: 1; /* Aumenta a opacidade ao passar o mouse */
 }
+
+/* styles.css */
+
+.top-banner {
+    width: 100%;
+    height: auto; /* Defina a altura desejada */
+    overflow: hidden;
+    background-color: #f8f9fa; /* Cor de fundo, caso a imagem não carregue */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.banner-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* Ajusta a imagem ao espaço do banner */
+}
