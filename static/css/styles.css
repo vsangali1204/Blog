@@ -1,4 +1,12 @@
 /* Sidebar */
+.navbar-custom {
+    background-color: #104677 !important; /* Define a cor personalizada */
+}
+.btn-custom {
+    background-color: #104677 !important; /* Define a cor personalizada */
+}
+
+
 #sidebar {
     height: 100vh;
     position: fixed;
@@ -60,4 +68,21 @@
     #content.collapsed {
         margin-left: 0;
     }
+}
+
+
+/* styles.css */
+
+.fixed-image {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 170px; /* Defina o tamanho desejado */
+    height: auto;
+    z-index: 1000; /* Para garantir que a imagem esteja acima de outros elementos */
+    opacity: 0.8; /* Transparência opcional */
+}
+
+.fixed-image:hover {
+    opacity: 1; /* Aumenta a opacidade ao passar o mouse */
 }
