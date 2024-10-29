@@ -129,8 +129,8 @@ def artigos():
             artigo_id = request.form['artigo_id']
             try:
                 with connection.cursor() as cur:
-                    cur.execute("UPDATE artigos SET titulo = %s, conteudo = %s WHERE id = %s AND id_usuario = %s",
-                                (titulo, conteudo, artigo_id, session['id_usuario']))
+                    cur.execute("UPDATE artigos SET titulo = %s, conteudo = %s WHERE id = %s ",
+                                (titulo, conteudo, artigo_id))
                     connection.commit()
                 flash('Artigo editado com sucesso!', 'success')
             except Exception as e:
@@ -152,7 +152,7 @@ def excluir_artigo(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM artigos WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            cur.execute("DELETE FROM artigos WHERE id = %s ", (id))
             connection.commit()
         flash('Artigo excluído com sucesso!', 'success')
     except Exception as e:
@@ -188,8 +188,8 @@ def livros():
             livro_id = request.form['livro_id']
             try:
                 with connection.cursor() as cur:
-                    cur.execute("UPDATE livros SET titulo = %s, autor = %s, link = %s WHERE id = %s AND id_usuario = %s",
-                                (titulo, autor, link, livro_id, session['id_usuario']))
+                    cur.execute("UPDATE livros SET titulo = %s, autor = %s, link = %s WHERE id = %s ",
+                                (titulo, autor, link, livro_id))
                     connection.commit()
                 flash('Livro editado com sucesso!', 'success')
             except Exception as e:
@@ -211,7 +211,7 @@ def excluir_livro(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM livros WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            cur.execute("DELETE FROM livros WHERE id = %s ", (id))
             connection.commit()
         flash('Livro excluído com sucesso!', 'success')
     except Exception as e:
@@ -247,8 +247,8 @@ def atividades():
             atividade_id = request.form['atividade_id']
             try:
                 with connection.cursor() as cur:
-                    cur.execute("UPDATE atividades SET titulo = %s, descricao = %s, data_entrega = %s WHERE id = %s AND id_usuario = %s",
-                                (titulo, descricao, data_entrega, atividade_id, session['id_usuario']))
+                    cur.execute("UPDATE atividades SET titulo = %s, descricao = %s, data_entrega = %s WHERE id = %s ",
+                                (titulo, descricao, data_entrega, atividade_id))
                     connection.commit()
                 flash('Atividade editada com sucesso!', 'success')
             except Exception as e:
@@ -270,7 +270,7 @@ def excluir_atividade(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM atividades WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            cur.execute("DELETE FROM atividades WHERE id = %s ", (id))
             connection.commit()
         flash('Atividade excluída com sucesso!', 'success')
     except Exception as e:
@@ -321,9 +321,9 @@ def eventos():
                         UPDATE eventos 
                         SET titulo = %s, tipo_evento = %s, data_evento = %s, 
                             local = %s, publico_alvo = %s, resumo = %s 
-                        WHERE id = %s AND id_usuario = %s
+                        WHERE id = %s 
                     """, (titulo, tipo_evento, data_evento, local, publico_alvo, 
-                         resumo, evento_id, session['id_usuario']))
+                         resumo, evento_id))
                     connection.commit()
                 flash('Evento editado com sucesso!', 'success')
             except Exception as e:
@@ -350,8 +350,8 @@ def excluir_evento(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM eventos WHERE id = %s AND id_usuario = %s", 
-                       (id, session['id_usuario']))
+            cur.execute("DELETE FROM eventos WHERE id = %s ", 
+                       (id))
             connection.commit()
         flash('Evento excluído com sucesso!', 'success')
     except Exception as e:
@@ -410,7 +410,7 @@ def publicacoes():
                         SET titulo = %s, link = %s, ano = %s, autor = %s, 
                             palavras_chave = %s, resumo = %s, origem_publicacao = %s, 
                             idioma = %s 
-                        WHERE id = %s AND id_usuario = %s
+                        WHERE id = %s 
                     """, (titulo, link, ano, autor, palavras_chave, resumo, 
                          origem_publicacao, idioma, publicacao_id, session['id_usuario']))
                     connection.commit()
@@ -439,7 +439,7 @@ def excluir_publicacao(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM publicacoes WHERE id = %s AND id_usuario = %s", 
+            cur.execute("DELETE FROM publicacoes WHERE id = %s ", 
                        (id, session['id_usuario']))
             connection.commit()
         flash('Publicação excluída com sucesso!', 'success')
@@ -482,7 +482,7 @@ def biblioteca():
                 with connection.cursor() as cur:
                     cur.execute(
                         "UPDATE materiais SET objetivo_educacional = %s, materiais_complementares = %s, sugestoes_integracao = %s "
-                        "WHERE id = %s AND id_usuario = %s",
+                        "WHERE id = %s ",
                         (objetivo_educacional, materiais_complementares, sugestoes_integracao, material_id, session['id_usuario'])
                     )
                     connection.commit()
@@ -506,7 +506,7 @@ def excluir_material(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM materiais WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            cur.execute("DELETE FROM materiais WHERE id = %s ", (id, session['id_usuario']))
             connection.commit()
         flash('Material excluído com sucesso!', 'success')
     except Exception as e:
@@ -547,7 +547,7 @@ def recursos():
                 with connection.cursor() as cur:
                     cur.execute("""
                         UPDATE recursos_interativos SET descricao = %s, tipo_atividade = %s, integracao_curriculo = %s 
-                        WHERE id = %s AND id_usuario = %s
+                        WHERE id = %s 
                     """, (descricao, tipo_atividade, integracao_curriculo, recurso_id, id_usuario))
                     connection.commit()
                 flash('Recurso interativo editado com sucesso!', 'success')
@@ -570,7 +570,7 @@ def excluir_recurso(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM recursos_interativos WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            cur.execute("DELETE FROM recursos_interativos WHERE id = %s ", (id, session['id_usuario']))
             connection.commit()
         flash('Recurso interativo excluído com sucesso!', 'success')
     except Exception as e:
@@ -612,7 +612,7 @@ def formacao():
                 with connection.cursor() as cur:
                     cur.execute(
                         "UPDATE formacao SET carga_horaria = %s, certificacao = %s, conteudos_complementares = %s "
-                        "WHERE id = %s AND id_usuario = %s",
+                        "WHERE id = %s ",
                         (carga_horaria, certificacao, conteudos_complementares, formacao_id, session['id_usuario'])
                     )
                     connection.commit()
@@ -636,7 +636,7 @@ def excluir_formacao(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM formacao WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            cur.execute("DELETE FROM formacao WHERE id = %s ", (id, session['id_usuario']))
             connection.commit()
         flash('Curso/Tutorial excluído com sucesso!', 'success')
     except Exception as e:
@@ -692,7 +692,7 @@ def excluir_topico(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM topicos WHERE id = %s AND id_usuario = %s", (id, session['id_usuario']))
+            cur.execute("DELETE FROM topicos WHERE id = %s ", (id))
             connection.commit()
         flash('Tópico excluído com sucesso!', 'success')
     except Exception as e:
