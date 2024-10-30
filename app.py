@@ -466,13 +466,14 @@ def biblioteca():
             objetivo_educacional = request.form['objetivo_educacional']
             materiais_complementares = request.form['materiais_complementares']
             sugestoes_integracao = request.form['sugestoes_integracao']
+            link = request.form['link']
             id_usuario = session['id_usuario']
             try:
                 with connection.cursor() as cur:
                     cur.execute(
-                        "INSERT INTO materiais (objetivo_educacional, materiais_complementares, sugestoes_integracao, id_usuario) "
-                        "VALUES (%s, %s, %s, %s)",
-                        (objetivo_educacional, materiais_complementares, sugestoes_integracao, id_usuario)
+                        "INSERT INTO materiais (objetivo_educacional, materiais_complementares, sugestoes_integracao, link, id_usuario) "
+                        "VALUES (%s, %s, %s, %s, %s)",
+                        (objetivo_educacional, materiais_complementares, sugestoes_integracao, link, id_usuario)
                     )
                     connection.commit()
                 flash('Material adicionado com sucesso!', 'success')
@@ -483,13 +484,14 @@ def biblioteca():
             objetivo_educacional = request.form['objetivo_educacional']
             materiais_complementares = request.form['materiais_complementares']
             sugestoes_integracao = request.form['sugestoes_integracao']
+            link = request.form['link']
             material_id = request.form['material_id']
             try:
                 with connection.cursor() as cur:
                     cur.execute(
-                        "UPDATE materiais SET objetivo_educacional = %s, materiais_complementares = %s, sugestoes_integracao = %s "
+                        "UPDATE materiais SET objetivo_educacional = %s, materiais_complementares = %s, sugestoes_integracao = %s, link = %s "
                         "WHERE id = %s ",
-                        (objetivo_educacional, materiais_complementares, sugestoes_integracao, material_id, session['id_usuario'])
+                        (objetivo_educacional, materiais_complementares, sugestoes_integracao, link, material_id, session['id_usuario'])
                     )
                     connection.commit()
                 flash('Material editado com sucesso!', 'success')
@@ -512,7 +514,7 @@ def excluir_material(id):
     connection = get_db_connection()
     try:
         with connection.cursor() as cur:
-            cur.execute("DELETE FROM materiais WHERE id = %s ", (id, session['id_usuario']))
+            cur.execute("DELETE FROM materiais WHERE id = %s ", (id))
             connection.commit()
         flash('Material excluído com sucesso!', 'success')
     except Exception as e:
@@ -532,13 +534,14 @@ def recursos():
             descricao = request.form['descricao']
             tipo_atividade = request.form['tipo_atividade']
             integracao_curriculo = request.form['integracao_curriculo']
+            link = request.form['link']
             id_usuario = session['id_usuario']
             try:
                 with connection.cursor() as cur:
                     cur.execute("""
-                        INSERT INTO recursos_interativos(descricao, tipo_atividade, integracao_curriculo, id_usuario)
-                        VALUES(%s, %s, %s, %s)
-                    """, (descricao, tipo_atividade, integracao_curriculo, id_usuario))
+                        INSERT INTO recursos_interativos(descricao, tipo_atividade, integracao_curriculo, link, id_usuario)
+                        VALUES(%s, %s, %s, %s, %s)
+                    """, (descricao, tipo_atividade, integracao_curriculo, link, id_usuario))
                     connection.commit()
                 flash('Recurso interativo adicionado com sucesso!', 'success')
             except Exception as e:
@@ -548,13 +551,14 @@ def recursos():
             descricao = request.form['descricao']
             tipo_atividade = request.form['tipo_atividade']
             integracao_curriculo = request.form['integracao_curriculo']
+            link = request.form['link']
             recurso_id = request.form['recurso_id']
             try:
                 with connection.cursor() as cur:
                     cur.execute("""
-                        UPDATE recursos_interativos SET descricao = %s, tipo_atividade = %s, integracao_curriculo = %s 
+                        UPDATE recursos_interativos SET descricao = %s, tipo_atividade = %s, integracao_curriculo = %s, link = %s 
                         WHERE id = %s 
-                    """, (descricao, tipo_atividade, integracao_curriculo, recurso_id, id_usuario))
+                    """, (descricao, tipo_atividade, integracao_curriculo, recurso_id, link,  id_usuario))
                     connection.commit()
                 flash('Recurso interativo editado com sucesso!', 'success')
             except Exception as e:
@@ -710,7 +714,62 @@ def excluir_topico(id):
     return redirect(url_for('forum'))
     
 
+# ----------------------- Rotas para documentos -------------------------
+@app.route('/documentos', methods=['GET', 'POST'])
+def documentos():
+    connection = get_db_connection()
+    if request.method == 'POST':
+        if request.form.get('action') == 'adicionar':
+            titulo = request.form['titulo']
+            descricao = request.form['descricao']
+            conteudo = request.form['conteudo']
+            link = request.form['link']
+            id_usuario = session['id_usuario']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute("INSERT INTO documentos_normativos (titulo, conteudo, descricao, link, id_usuario) VALUES(%s, %s, %s, %s, %s)",
+                                (titulo, conteudo, descricao, link, id_usuario))
+                    connection.commit()
+                flash('Documento adicionado com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao adicionar documento: {}'.format(e), 'danger')
+        elif request.form.get('action') == 'editar':
+            titulo = request.form['titulo']
+            conteudo = request.form['conteudo']
+            descricao = request.form['descricao']
+            documento_id = request.form['documento_id']
+            link = request.form['link']
+            try:
+                with connection.cursor() as cur:
+                    cur.execute("UPDATE documentos_normativos SET titulo = %s, conteudo = %s, descricao = %s, link = %s WHERE id = %s ",
+                                (titulo, conteudo, descricao, link, documento_id))
+                    connection.commit()
+                flash('Documento editado com sucesso!', 'success')
+            except Exception as e:
+                flash('Erro ao editar documento: {}'.format(e), 'danger')
+        return redirect(url_for('documentos'))
 
+    try:
+        with connection.cursor() as cur:
+            cur.execute("SELECT * FROM documentos_normativos ORDER BY data_criacao DESC")
+            documentos = cur.fetchall()
+    finally:
+        connection.close()
+    return render_template('documentos.html', documentos=documentos)
+
+@app.route('/excluir/documento/<int:id>')
+def excluir_documento(id):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cur:
+            cur.execute("DELETE FROM documentos_normativos WHERE id = %s ", (id))
+            connection.commit()
+        flash('Documento excluído com sucesso!', 'success')
+    except Exception as e:
+        flash('Erro ao excluir documento: {}'.format(e), 'danger')
+    finally:
+        connection.close()
+    return redirect(url_for('documentos'))
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host='0.0.0.0', port=port)

@@ -19,6 +19,7 @@
                         <p class="card-text">Tipo: {{ recurso.tipo_atividade }}</p>
                         <p class="card-text">Integração com Currículo: {{ recurso.integracao_curriculo }}</p>
                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVerRecurso{{ recurso.id }}">Ver mais</button>
+                        <a href="{{ recurso.link }}" target="_blank" class="btn btn-acesso">Acessar Link</a>
                         
                         {% if session.logado %}
                             <div class="mt-2">
@@ -44,6 +45,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <a href="{{ recurso.link }}" target="_blank" class="btn btn-acesso">Acessar Link</a>                            
                         </div>
                     </div>
                 </div>
@@ -77,6 +79,10 @@
                         <div class="mb-3">
                             <label for="integracao_curriculo" class="form-label">Integração com Currículo (BNCC)</label>
                             <input type="text" class="form-control" id="integracao_curriculo" name="integracao_curriculo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="link" class="form-label">Link</label>
+                            <input type="text" class="form-control" id="link" name="link" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -116,6 +122,10 @@
                             <label for="integracao_curriculo{{ recurso.id }}" class="form-label">Integração com Currículo</label>
                             <input type="text" class="form-control" id="integracao_curriculo{{ recurso.id }}" name="integracao_curriculo" value="{{ recurso.integracao_curriculo }}" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="link" class="form-label">Link</label>
+                            <input type="text" class="form-control" id="link" name="link" value="{{ recurso.link }}"required>
+                        </div
                         <input type="hidden" name="recurso_id" value="{{ recurso.id }}">
                     </div>
                     <div class="modal-footer">

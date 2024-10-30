@@ -1,0 +1,134 @@
+<!-- templates/Documentos.html -->
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1 class="mb-4">Documentos</h1>
+    
+    {% if session.logado %}
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionar">Adicionar Documento</button>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        {% for documento in documentos %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ documento.titulo }}</h5>
+                        <p class="card-text">{{ documento.descricao[:100] }}...</p>
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVer{{ documento.id }}">Ler mais</button>
+                        <a href="{{ documento.link }}" target="_blank" class="btn btn-acesso">Acessar Link</a>
+
+                        {% if session.logado %}
+                            <div class="mt-2">
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar{{ documento.id }}">Editar</button>
+                                <a href="{{ url_for('excluir_documento', id=documento.id) }}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este Documento?')">Excluir</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para Ver documento -->
+            <div class="modal fade" id="modalVer{{ documento.id }}" tabindex="-1" aria-labelledby="modalVerLabel{{ documento.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalVerLabel{{ documento.id }}">{{ documento.titulo }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ documento.conteudo }}</p>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ documento.descricao }}</p>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ documento.link }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <a href="{{ documento.link }}" target="_blank" class="btn btn-info">Acessar Link</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal para Adicionar Documento -->
+    <div class="modal fade" id="modalAdicionar" tabindex="-1" aria-labelledby="modalAdicionarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('documentos') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarLabel">Adicionar Novo Documento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conteudo" class="form-label">Conteúdo</label>
+                            <textarea class="form-control" id="conteudo" name="conteudo" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="link" class="form-label">Link</label>
+                            <textarea class="form-control" id="link" name="link" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="adicionar">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais para Editar Documentos (um para cada documento) -->
+    {% for documento in documentos %}
+    <div class="modal fade" id="modalEditar{{ documento.id }}" tabindex="-1" aria-labelledby="modalEditarLabel{{ documento.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ url_for('documentos') }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarLabel{{ documento.id }}">Editar Documento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="titulo{{ documento.id }}" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo{{ documento.id }}" name="titulo" value="{{ documento.titulo }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conteudo{{ documento.id }}" class="form-label">Conteúdo</label>
+                            <textarea class="form-control" id="conteudo{{ documento.id }}" name="conteudo" rows="5" required>{{ documento.conteudo }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao{{ documento.id }}" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao{{ documento.id }}" name="descricao" rows="5" required>{{ documento.descricao }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="link{{ documento.id }}" class="form-label">Link do Documento</label>
+                            <textarea class="form-control" id="link{{ documento.id }}" name="link" rows="5" required>{{ documento.link }}</textarea>
+                        </div>
+                        <input type="hidden" name="documento_id" value="{{ documento.id }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" name="action" value="editar">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
