@@ -26,7 +26,8 @@
 
                         <!-- Botão para ver detalhes completos -->
                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVerEvento{{ evento.id }}">Ver Detalhes</button>
-
+                        <a href="{{ evento.link }}" target="_blank" class="btn btn-acesso">Acessar Link</a>
+                        
                         <!-- Exibir botões de edição e exclusão somente se logado -->
                         {% if session.logado %}
                             <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarEvento{{ evento.id }}">Editar</button>
@@ -38,7 +39,7 @@
 
             <!-- Modal para Ver Evento -->
             <div class="modal fade" id="modalVerEvento{{ evento.id }}" tabindex="-1" aria-labelledby="modalVerEventoLabel{{ evento.id }}" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalVerEventoLabel{{ evento.id }}">{{ evento.titulo }}</h5>
@@ -51,9 +52,11 @@
                             <p><strong>Público-Alvo:</strong> {{ evento.publico_alvo }}</p>
                             <p><strong>Resumo:</strong></p>
                             <p>{{ evento.resumo }}</p>
+                            <p>{{ evento.link }}</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <a href="{{ evento.link }}" target="_blank" class="btn btn-acesso">Acessar Link</a>
                         </div>
                     </div>
                 </div>
@@ -101,6 +104,10 @@
                         <div class="mb-3">
                             <label for="resumoEvento" class="form-label">Resumo do Evento</label>
                             <textarea class="form-control" id="resumoEvento" name="resumo" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="linkEvento" class="form-label">Link do Evento</label>
+                            <textarea class="form-control" id="linkEvento" name="link" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -153,6 +160,10 @@
                         <div class="mb-3">
                             <label for="resumoEvento{{ evento.id }}" class="form-label">Resumo do Evento</label>
                             <textarea class="form-control" id="resumoEvento{{ evento.id }}" name="resumo" rows="5" required>{{ evento.resumo }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="linkEvento{{ evento.id }}" class="form-label">Link do Evento</label>
+                            <textarea class="form-control" id="linkEvento{{ evento.id }}" name="link" rows="5" required>{{ evento.link }}</textarea>
                         </div>
                         <input type="hidden" name="evento_id" value="{{ evento.id }}">
                     </div>

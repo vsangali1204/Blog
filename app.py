@@ -113,11 +113,12 @@ def artigos():
         if request.form.get('action') == 'adicionar':
             titulo = request.form['titulo']
             conteudo = request.form['conteudo']
+            link = request.form['link']
             id_usuario = session['id_usuario']
             try:
                 with connection.cursor() as cur:
-                    cur.execute("INSERT INTO artigos(titulo, conteudo, id_usuario) VALUES(%s, %s, %s)",
-                                (titulo, conteudo, id_usuario))
+                    cur.execute("INSERT INTO artigos(titulo, conteudo, link, id_usuario) VALUES(%s, %s, %s, %s)",
+                                (titulo, conteudo, link, id_usuario))
                     connection.commit()
                 flash('Artigo adicionado com sucesso!', 'success')
             except Exception as e:
@@ -127,10 +128,11 @@ def artigos():
             titulo = request.form['titulo']
             conteudo = request.form['conteudo']
             artigo_id = request.form['artigo_id']
+            link = request.form['link']
             try:
                 with connection.cursor() as cur:
-                    cur.execute("UPDATE artigos SET titulo = %s, conteudo = %s WHERE id = %s ",
-                                (titulo, conteudo, artigo_id))
+                    cur.execute("UPDATE artigos SET titulo = %s, conteudo = %s, link = %s WHERE id = %s ",
+                                (titulo, conteudo, artigo_id, link))
                     connection.commit()
                 flash('Artigo editado com sucesso!', 'success')
             except Exception as e:
@@ -230,11 +232,12 @@ def atividades():
             titulo = request.form['titulo']
             descricao = request.form['descricao']
             data_entrega = request.form['data_entrega']
+            link = request.form['link']
             id_usuario = session['id_usuario']
             try:
                 with connection.cursor() as cur:
-                    cur.execute("INSERT INTO atividades(titulo, descricao, data_entrega, id_usuario) VALUES(%s, %s, %s, %s)",
-                                (titulo, descricao, data_entrega, id_usuario))
+                    cur.execute("INSERT INTO atividades(titulo, descricao, data_entrega, id_usuario, link) VALUES(%s, %s, %s, %s, %s)",
+                                (titulo, descricao, data_entrega, id_usuario, link))
                     connection.commit()
                 flash('Atividade adicionada com sucesso!', 'success')
             except Exception as e:
@@ -244,11 +247,12 @@ def atividades():
             titulo = request.form['titulo']
             descricao = request.form['descricao']
             data_entrega = request.form['data_entrega']
+            link = request.form['link']
             atividade_id = request.form['atividade_id']
             try:
                 with connection.cursor() as cur:
-                    cur.execute("UPDATE atividades SET titulo = %s, descricao = %s, data_entrega = %s WHERE id = %s ",
-                                (titulo, descricao, data_entrega, atividade_id))
+                    cur.execute("UPDATE atividades SET titulo = %s, descricao = %s, data_entrega = %s, link = %s WHERE id = %s ",
+                                (titulo, descricao, data_entrega, atividade_id, link))
                     connection.commit()
                 flash('Atividade editada com sucesso!', 'success')
             except Exception as e:
@@ -293,15 +297,16 @@ def eventos():
             local = request.form['local']
             publico_alvo = request.form['publico_alvo']
             resumo = request.form['resumo']
+            link = request.form['link']
             id_usuario = session['id_usuario']
             try:
                 with connection.cursor() as cur:
                     cur.execute("""
                         INSERT INTO eventos(titulo, tipo_evento, data_evento, local, 
-                        publico_alvo, resumo, id_usuario) 
-                        VALUES(%s, %s, %s, %s, %s, %s, %s)
+                        publico_alvo, resumo, link, id_usuario) 
+                        VALUES(%s, %s, %s, %s, %s, %s, %s, %s)
                     """, (titulo, tipo_evento, data_evento, local, publico_alvo, 
-                         resumo, id_usuario))
+                         resumo, link, id_usuario))
                     connection.commit()
                 flash('Evento adicionado com sucesso!', 'success')
             except Exception as e:
@@ -314,16 +319,17 @@ def eventos():
             local = request.form['local']
             publico_alvo = request.form['publico_alvo']
             resumo = request.form['resumo']
+            link = request.form['link']
             evento_id = request.form['evento_id']
             try:
                 with connection.cursor() as cur:
                     cur.execute("""
                         UPDATE eventos 
                         SET titulo = %s, tipo_evento = %s, data_evento = %s, 
-                            local = %s, publico_alvo = %s, resumo = %s 
+                            local = %s, publico_alvo = %s, resumo = %s, link = %s
                         WHERE id = %s 
                     """, (titulo, tipo_evento, data_evento, local, publico_alvo, 
-                         resumo, evento_id))
+                         resumo, link,  evento_id))
                     connection.commit()
                 flash('Evento editado com sucesso!', 'success')
             except Exception as e:
@@ -590,13 +596,14 @@ def formacao():
             carga_horaria = request.form['carga_horaria']
             certificacao = 'certificacao' in request.form  # Verifica se o checkbox foi marcado
             conteudos_complementares = request.form['conteudos_complementares']
+            link = request.form['link']
             id_usuario = session['id_usuario']
             try:
                 with connection.cursor() as cur:
                     cur.execute(
-                        "INSERT INTO formacao (carga_horaria, certificacao, conteudos_complementares, id_usuario) "
-                        "VALUES (%s, %s, %s, %s)",
-                        (carga_horaria, certificacao, conteudos_complementares, id_usuario)
+                        "INSERT INTO formacao (carga_horaria, certificacao, conteudos_complementares, link, id_usuario) "
+                        "VALUES (%s, %s, %s, %s, %s)",
+                        (carga_horaria, certificacao, conteudos_complementares, link, id_usuario)
                     )
                     connection.commit()
                 flash('Curso/Tutorial adicionado com sucesso!', 'success')
@@ -607,13 +614,14 @@ def formacao():
             carga_horaria = request.form['carga_horaria']
             certificacao = 'certificacao' in request.form
             conteudos_complementares = request.form['conteudos_complementares']
+            link = request.form['link']
             formacao_id = request.form['formacao_id']
             try:
                 with connection.cursor() as cur:
                     cur.execute(
-                        "UPDATE formacao SET carga_horaria = %s, certificacao = %s, conteudos_complementares = %s "
+                        "UPDATE formacao SET carga_horaria = %s, certificacao = %s, conteudos_complementares = %s, link = %s"
                         "WHERE id = %s ",
-                        (carga_horaria, certificacao, conteudos_complementares, formacao_id, session['id_usuario'])
+                        (carga_horaria, certificacao, conteudos_complementares, link, formacao_id)
                     )
                     connection.commit()
                 flash('Curso/Tutorial editado com sucesso!', 'success')

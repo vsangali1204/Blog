@@ -18,7 +18,8 @@
                         <h5 class="card-title">{{ artigo.titulo }}</h5>
                         <p class="card-text">{{ artigo.conteudo[:100] }}...</p>
                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVer{{ artigo.id }}">Ler mais</button>
-                        
+                        <a href="{{ artigo.LINK }}" target="_blank" class="btn btn-acesso">Acessar Link</a>
+
                         {% if session.logado %}
                             <div class="mt-2">
                                 <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar{{ artigo.id }}">Editar</button>
@@ -40,8 +41,12 @@
                         <div class="modal-body">
                             <p>{{ artigo.conteudo }}</p>
                         </div>
+                        <div class="modal-body">
+                            <p>{{ artigo.LINK }}</p>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <a href="{{ artigo.LINK }}" target="_blank" class="btn btn-info">Acessar Link</a>
                         </div>
                     </div>
                 </div>
@@ -66,6 +71,10 @@
                         <div class="mb-3">
                             <label for="conteudo" class="form-label">Conteúdo</label>
                             <textarea class="form-control" id="conteudo" name="conteudo" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="link" class="form-label">Link do Artigo</label>
+                            <textarea class="form-control" id="link" name="link" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -95,6 +104,10 @@
                         <div class="mb-3">
                             <label for="conteudo{{ artigo.id }}" class="form-label">Conteúdo</label>
                             <textarea class="form-control" id="conteudo{{ artigo.id }}" name="conteudo" rows="5" required>{{ artigo.conteudo }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="link{{ artigo.id }}" class="form-label">Link do Artigo</label>
+                            <textarea class="form-control" id="link{{ artigo.id }}" name="link" rows="5" required>{{ artigo.LINK }}</textarea>
                         </div>
                         <input type="hidden" name="artigo_id" value="{{ artigo.id }}">
                     </div>

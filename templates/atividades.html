@@ -24,6 +24,7 @@
 
                         <!-- Botão para ver a descrição completa -->
                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVerAtividade{{ atividade.id }}">Ver Atividade</button>
+                        <a href="{{ atividade.link }}" target="_blank" class="btn btn-acesso">Acessar Link</a>
 
                         <!-- Exibir botões de edição e exclusão somente se logado -->
                         {% if session.logado %}
@@ -36,7 +37,7 @@
 
             <!-- Modal para Ver Atividade -->
             <div class="modal fade" id="modalVerAtividade{{ atividade.id }}" tabindex="-1" aria-labelledby="modalVerAtividadeLabel{{ atividade.id }}" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalVerAtividadeLabel{{ atividade.id }}">{{ atividade.titulo }}</h5>
@@ -46,9 +47,11 @@
                             <p><strong>Descrição:</strong></p>
                             <p>{{ atividade.descricao }}</p>
                             <p><strong>Data de Entrega:</strong> {{ atividade.data_entrega }}</p>
+                            <p><strong>Link da Atividade:</strong> {{ atividade.link }}</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <a href="{{ atividade.link }}" target="_blank" class="btn btn-acesso">Acessar Link</a>
                         </div>
                     </div>
                 </div>
@@ -77,6 +80,10 @@
                         <div class="mb-3">
                             <label for="dataEntregaAtividade" class="form-label">Data de Entrega</label>
                             <input type="date" class="form-control" id="dataEntregaAtividade" name="data_entrega" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="linkAtividade" class="form-label">Link da Atividade</label>
+                            <textarea class="form-control" id="linkAtividade" name="link" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -110,6 +117,10 @@
                         <div class="mb-3">
                             <label for="dataEntregaAtividade{{ atividade.id }}" class="form-label">Data de Entrega</label>
                             <input type="date" class="form-control" id="dataEntregaAtividade{{ atividade.id }}" name="data_entrega" value="{{ atividade.data_entrega }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="linkAtividade{{ atividade.id }}" class="form-label">Link da Atividade</label>
+                            <textarea class="form-control" id="linkAtividade{{ atividade.id }}" name="link" rows="5" required>{{ atividade.link }}</textarea>
                         </div>
                         <input type="hidden" name="atividade_id" value="{{ atividade.id }}">
                     </div>

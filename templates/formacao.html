@@ -18,6 +18,7 @@
                         <h5 class="card-title">Carga Horária: {{ formacao.carga_horaria }}</h5>
                         <p class="card-text">Certificação: {{ 'Sim' if formacao.certificacao else 'Não' }}</p>
                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalVer{{ formacao.id }}">Ler mais</button>
+                        <a href="{{ formacao.link }}" target="_blank" class="btn btn-acesso">Acessar Link</a>
                         
                         {% if session.logado %}
                             <div class="mt-2">
@@ -45,6 +46,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <a href="{{ formacao.link }}" target="_blank" class="btn btn-acesso">Acessar Link</a>
                         </div>
                     </div>
                 </div>
@@ -77,6 +79,10 @@
                         <div class="mb-3">
                             <label for="comunidade" class="form-label">Comunidade de Professores</label>
                             <textarea class="form-control" id="comunidade" name="comunidade" rows="3" placeholder="Espaço para troca de experiências e estratégias pedagógicas."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="link" class="form-label">Link da Formacão</label>
+                            <textarea class="form-control" id="link" name="link" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -115,6 +121,10 @@
                         <div class="mb-3">
                             <label for="comunidade" class="form-label">Comunidade de Professores</label>
                             <textarea class="form-control" id="comunidade" name="comunidade" rows="3" required>{{ formacao.comunidade }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="link" class="form-label">Link da Formacão</label>
+                            <textarea class="form-control" id="link" name="link" rows="3" required>{{ formacao.link }}</textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
